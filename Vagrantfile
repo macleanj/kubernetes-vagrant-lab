@@ -21,7 +21,7 @@ laptopIp = "192.168.1.99" # Secondary "always up" interface for offline demos
 #     :ip => "10.16.0.1",
 #     :mem => "1024",
 #     :cpu => "1",
-#     :disksize => "10G"
+#     :disksize => "10GB"
 #     # :ssh_port => '2201'
 #   }
 # ]
@@ -35,7 +35,7 @@ servers=[
     :ip => "10.16.0.10",
     :mem => "4096",
     :cpu => "4",
-    :disksize => "10G"
+    :disksize => "10GB"
     # :ssh_port => '2210'
   },
   # {
@@ -46,7 +46,7 @@ servers=[
   #   :ip => "10.16.0.11",
   #   :mem => "2048",
   #   :cpu => "2",
-  #   :disksize => "10G"
+  #   :disksize => "10GB"
   #   # :ssh_port => '2211'
   # },
   # {
@@ -57,7 +57,7 @@ servers=[
   #   :ip => "10.16.0.12",
   #   :mem => "2048",
   #   :cpu => "2",
-  #   :disksize => "10G"
+  #   :disksize => "10GB"
   #   # :ssh_port => '2212'
   # },
   {
@@ -68,7 +68,7 @@ servers=[
     :ip => "10.16.0.20",
     :mem => "4096",
     :cpu => "2",
-    :disksize => "20G"
+    :disksize => "15GB"
     # :ssh_port => '2220'
   },
   {
@@ -79,7 +79,7 @@ servers=[
     :ip => "10.16.0.21",
     :mem => "4096",
     :cpu => "2",
-    :disksize => "20G"
+    :disksize => "15GB"
     # :ssh_port => '2221'
   },
   # {
@@ -90,7 +90,7 @@ servers=[
   #   :ip => "10.16.0.22",
   #   :mem => "2048",
   #   :cpu => "1",
-  #   :disksize => "20G"
+  #   :disksize => "15GB"
   #   # :ssh_port => '2222'
   # }
 ]
