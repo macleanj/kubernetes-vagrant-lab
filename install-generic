@@ -1,0 +1,77 @@
+#!/bin/bash
+
+
+# Passed arguments
+docker_version=$1
+glusterfs_version=$2
+
+# kubelet requires swap off
+swapoff -a
+# keep swap off after reboot
+sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+# Allow guest to host traffic
+cat <<EOF >>/etc/ufw/sysctl.conf
+# Added by vagrant script
+net/bridge/bridge-nf-call-ip6tables = 1
+net/bridge/bridge-nf-call-iptables = 1
+net/bridge/bridge-nf-call-arptables = 1
+EOF
+# Make permanent
+sudo sysctl -p
+
+export DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+echo "Add dependencies"
+apt-get update
+apt-get -qq install -y \
+    apt-transport-https \
+    ca-certificates \
+    wget \
+    curl \
+    software-properties-common \
+    nfs-common
+
+# Install glusterfs client
+echo "Adding glusterfs repo"
+add-apt-repository ppa:gluster/glusterfs-${glusterfs_version}
+apt-get update
+echo "Install packages"
+apt-get install -y glusterfs-client
+
+# Install docker
+echo "Add docker repo"
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+echo "Install packages"
+apt-get update
+apt-get -qq install -y \
+  ebtables \
+  ethtool \
+  docker-ce=${docker_version}
+
+# Setup daemon and start docker
+cat > /etc/docker/daemon.json <<EOF
+{
+"exec-opts": ["native.cgroupdriver=systemd"],
+"log-driver": "json-file",
+"log-opts": {
+"max-size": "100m"
+},
+"storage-driver": "overlay2"
+}
+EOF
+
+usermod -aG docker vagrant
+systemctl enable docker.service
+systemctl restart docker.service
+
+# Add direct username/password access (e.g. for integration with other platforms like the CKA exam GateOne)
+# vagrant/vagrant (default)
+# root/vagrant
+echo -e "vagrant\nvagrant" | passwd
+sed -i 's/.*PermitRootLogin prohibit-password.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+systemctl restart ssh.service
+

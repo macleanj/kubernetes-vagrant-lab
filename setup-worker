@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Passed arguments
+echo "arg1: $1 / arg2:  $2 / arg3:  $3 / arg4:  $4 / arg5:  $5 / arg6:  $6"
+laptopIp=$1
+myIp=$2
+masterIp=$3
+masterIps=$4
+workerIps=$5
+cni_provider=$6
+
+# iptables -t nat -F
+# iptables -F 
+# iptables -X
+
+# echo 'Delete docker0 bridge'
+# ip link set docker0 down
+# ip link delete docker0
+
+echo "Update kubeadm.conf"
+cat <<EOF > /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+[Service]
+Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"
+Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
+Environment="KUBELET_EXTRA_ARGS=--node-ip=${myIp}"
+# This is a file that "kubeadm init" and "kubeadm join" generates at runtime, populating the KUBELET_KUBEADM_ARGS variable dynamically
+EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
+# This is a file that the user can use for overrides of the kubelet args as a last resort. Preferably, the user should use
+# the .NodeRegistration.KubeletExtraArgs object in the configuration files instead. KUBELET_EXTRA_ARGS should be sourced from this file.
+EnvironmentFile=-/etc/default/kubelet
+ExecStart=
+ExecStart=/usr/bin/kubelet \$KUBELET_KUBECONFIG_ARGS \$KUBELET_CONFIG_ARGS \$KUBELET_KUBEADM_ARGS \$KUBELET_EXTRA_ARGS
+EOF
+
+systemctl daemon-reload
+systemctl restart kubelet.service
+
+echo "Join the master"
+kubeadm join ${masterIp}:6443 --discovery-token-unsafe-skip-ca-verification --token 8ewj1p.9r9hcjoqgajrj4gi
+
+# Alternative join sequence
+# apt-get install -y sshpass
+# sshpass -p "vagrant" scp -o StrictHostKeyChecking=no vagrant@${masterIp}:/tmp/kubeadm_join_cmd.sh .
+# sh ./kubeadm_join_cmd.sh

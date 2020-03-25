@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# See https://medium.com/faun/configuring-ha-kubernetes-cluster-on-bare-metal-servers-with-kubeadm-1-2-1e79f0f7857b for continuation of HA cluster
+
+export DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+echo 'Add docker repo'
+apt-get update
+apt-get -qq install -y haproxy
+
+# Setup proxy config
+cat > /etc/haproxy/haproxy.cfg <<EOF
+backend api
+  server api0 10.16.0.10:6443 check
+  server api1 10.16.0.11:6443 check
+  server api2 10.16.0.12:6443 check
+
+frontend main
+  bind *:6443
+  use_backend api
+
+listen stats
+  bind *:6443
+  stats enable
+  stats uri /healthz
+
+EOF
+
+sudo systemctl reload haproxy

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Passed arguments
+k8_version=$1
+
+# Install kubeadm. Distribution kubernetes-xenial on bionic still works.
+echo 'Add kube repo'
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+add-apt-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+echo 'Install packages'
+apt-get update
+apt-get -qq install -y \
+  kubelet=${k8_version} \
+  kubeadm=${k8_version} \
+  kubectl=${k8_version}

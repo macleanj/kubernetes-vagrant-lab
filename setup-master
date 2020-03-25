@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# Passed arguments
+echo "arg1: $1 / arg2:  $2 / arg3:  $3 / arg4:  $4 / arg5:  $5 / arg6:  $6"
+laptopIp=$1
+myIp=$2
+masterIp=$3
+masterIps=$4
+workerIps=$5
+cni_provider=$6
+
+if [[ $cni_provider == "flannel" ]]; then
+  echo "Prepare Flannel"
+
+  # echo "Disable IPtables"
+  # iptables -t nat -F
+  # iptables -F 
+  # iptables -X
+
+  # echo 'Delete the docker bridge'
+  # ip link set docker0 down
+  # ip link delete docker0
+
+  podCIDR="10.244.0.0/16"
+  manifest="https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+  curl -o kube-cni.yml $manifest
+  # Adapt for vagrant
+  sed -i.bak '/--kube-subnet-mgr/a new-value_from-script' kube-cni.yml
+  sed -i 's/new-value_from-script/        - --iface=enp0s8/g' kube-cni.yml
+else
+  echo "Prepare Calico"
+  podCIDR="192.168.0.0/16"
+  manifest="https://docs.projectcalico.org/v3.8/manifests/calico.yaml"
+  curl -o kube-cni.yml $manifest
+fi
+
+echo "Start the cluster"
+kubeadm --apiserver-advertise-address=${masterIp} --pod-network-cidr=${podCIDR} --apiserver-cert-extra-sans=$masterIp,$laptopIp,kubernetes,127.0.0.1 --token=8ewj1p.9r9hcjoqgajrj4gi init
+mkdir -p /home/vagrant/.kube
+cp /etc/kubernetes/admin.conf /home/vagrant/.kube/config
+chmod 777 /home/vagrant/.kube/config
+chown 1000:1000 -R /home/vagrant/.kube
+export KUBECONFIG=/home/vagrant/.kube/config
+
+echo "Update kubeadm.conf"
+cat <<EOF > /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+[Service]
+Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"
+Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
+Environment="KUBELET_EXTRA_ARGS=--node-ip=${myIp}"
+# This is a file that "kubeadm init" and "kubeadm join" generates at runtime, populating the KUBELET_KUBEADM_ARGS variable dynamically
+EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
+# This is a file that the user can use for overrides of the kubelet args as a last resort. Preferably, the user should use
+# the .NodeRegistration.KubeletExtraArgs object in the configuration files instead. KUBELET_EXTRA_ARGS should be sourced from this file.
+EnvironmentFile=-/etc/default/kubelet
+ExecStart=
+ExecStart=/usr/bin/kubelet \$KUBELET_KUBECONFIG_ARGS \$KUBELET_CONFIG_ARGS \$KUBELET_KUBEADM_ARGS \$KUBELET_EXTRA_ARGS
+EOF
+
+echo "Setup $cni_provider CNI"
+kubectl apply -f kube-cni.yml
+# kubectl taint nodes --all node-role.kubernetes.io/master-
+
+echo "Restart kubelet"
+systemctl daemon-reload
+systemctl restart kubelet.service
+
+if [[ $cni_provider == "flannel" ]]; then
+  echo "Flannel: clean up non-used architectures"
+  kubectl delete -n kube-system daemonset.apps/kube-flannel-ds-arm
+  kubectl delete -n kube-system daemonset.apps/kube-flannel-ds-arm64
+  kubectl delete -n kube-system daemonset.apps/kube-flannel-ds-ppc64le
+  kubectl delete -n kube-system daemonset.apps/kube-flannel-ds-s390x
+fi
+
+# Alternative join sequence
+# kubeadm token create --print-join-command >> /tmp/kubeadm_join_cmd.sh
+# chmod +x /tmp/kubeadm_join_cmd.sh
