@@ -62,6 +62,6 @@ Run the above command to join the worker and check on the control plane if the w
 
 Deploy a test application
 ```
-kubectl run hell-world --image=jmaclean/hello-world
+kubectl run hello-world --image=jmaclean/hello-world
 ```
 

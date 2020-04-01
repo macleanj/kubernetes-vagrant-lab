@@ -1,11 +1,13 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# One subversion less to enable upgrade tests. "1.15.4-00" for CKA exam
+# 1.16.1-00
+k8_version = "1.18.0-00"
 install_kubeadm = 1
 setup_cluster = 1
 setup_loadbalancer = 0 # TODO: See https://medium.com/faun/configuring-ha-kubernetes-cluster-on-bare-metal-servers-with-kubeadm-1-2-1e79f0f7857b for continuation of HA cluster
 docker_version = "5:18.09.9~3-0~ubuntu-bionic" # Get version by: apt-cache madison docker-ce
-k8_version = "1.16.1-00" # One subversion less to enable upgrade tests. "1.15.4-00" for CKA exam
 cni_provider = "calico" # "calico|flannel" where calico is the default
 vagrant_default_provider = "virtualbox"
 glusterfs_version = "6.6"
@@ -68,7 +70,7 @@ servers=[
     :ip => "10.16.0.20",
     :mem => "4096",
     :cpu => "2",
-    :disksize => "15GB"
+    :disksize => "20GB"
     # :ssh_port => '2220'
   },
   {
@@ -79,7 +81,7 @@ servers=[
     :ip => "10.16.0.21",
     :mem => "4096",
     :cpu => "2",
-    :disksize => "15GB"
+    :disksize => "20GB"
     # :ssh_port => '2221'
   },
   # {
