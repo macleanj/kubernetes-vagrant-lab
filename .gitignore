@@ -13,15 +13,30 @@ Thumbs.db
 # Secutiry           #
 ######################
 *.pem
+*.pub
+*.base64
+*-rsa
 
 ######################
 # Generic            #
 ######################
+tempie/
+tessie*
+*-temp
+zzz_backup/
 data/
 *.log
 *.zip
 *.tar.gz
 *.tar
+*.temp
+*.tmp
+*.out
+*.secret
+*.git.ignore
+*.local
+*\ copy.*
+credentials.json
 
 ######################
 # NodeJS             #
@@ -29,27 +44,32 @@ data/
 node_modules/
 
 ######################
-# Terraform
+# Terraform / Terragrunt
 ######################
 **/.terraform/*
-# *.tfstate
-# *.tfstate.*
+*.tfstate
+*.tfstate.*
+errored.tfstate
 crash.log
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+**/.terragrunt*/*
+*terragrunt-debug.tfvars.json
+*backend.tf
+*.lock.hcl
 
 ######################
 # NodeJS             #
 ######################
-**/.serverless/*
-**/venv/*
+**/.serverless
+**/venv
 
 ######################
 # Vagrant
 ######################
-.vagrant
+**/.vagrant
 
 ######################
 # Kubernetes
@@ -60,3 +80,10 @@ logs/
 *.csr
 *.key
 *.pfx
+kubeconfig_*
+kubeconfig-*
+*.name
+tf-init-env.env
+tf-init-env.export
+build.env*
+cloud.env*

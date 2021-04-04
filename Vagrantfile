@@ -3,7 +3,8 @@
 
 # One subversion less to enable upgrade tests. "1.15.4-00" for CKA exam
 # 1.16.1-00
-k8_version = "1.18.0-00"
+# 1.18.0-00
+k8_version = "1.19.7-00"
 install_kubeadm = 1
 setup_cluster = 1
 setup_loadbalancer = 0 # TODO: See https://medium.com/faun/configuring-ha-kubernetes-cluster-on-bare-metal-servers-with-kubeadm-1-2-1e79f0f7857b for continuation of HA cluster
@@ -158,7 +159,7 @@ Vagrant.configure("2") do |config|
       # config.vm.network "forwarded_port", guest: 22, host: machine[:ssh_port], id: "ssh"
 
       config.vm.provider :virtualbox do |v|
-        v.customize ["modifyvm", :id, "--name", machine[:hostname]]
+        v.customize ["modifyvm", :id, "--name", "k8s_vagrant_" + machine[:hostname]]
         v.customize ["modifyvm", :id, "--memory", machine[:mem]]
         v.customize ["modifyvm", :id, "--cpus", machine[:cpu]]
       end
