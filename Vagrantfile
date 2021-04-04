@@ -1,5 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+programDir = File.basename(Dir.getwd)
 
 # One subversion less to enable upgrade tests. "1.15.4-00" for CKA exam
 # 1.16.1-00
@@ -159,7 +160,7 @@ Vagrant.configure("2") do |config|
       # config.vm.network "forwarded_port", guest: 22, host: machine[:ssh_port], id: "ssh"
 
       config.vm.provider :virtualbox do |v|
-        v.customize ["modifyvm", :id, "--name", "k8s_vagrant_" + machine[:hostname]]
+        v.customize ["modifyvm", :id, "--name", programDir + "_" + machine[:hostname]]
         v.customize ["modifyvm", :id, "--memory", machine[:mem]]
         v.customize ["modifyvm", :id, "--cpus", machine[:cpu]]
       end
