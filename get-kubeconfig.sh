@@ -1,6 +1,7 @@
 #!/bin/bash
 programName=$(basename "$0")
-programDir=$(dirname "$0")
+# programDir=$(dirname "$0") # relative
+programDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )" # exact
 
 KUBECONFIG_FILE="kubeconfig_cluster-admin-vagrant.yml"
 vagrant scp master-0:~/.kube/config ./$KUBECONFIG_FILE
