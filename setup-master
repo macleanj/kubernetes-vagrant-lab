@@ -22,7 +22,7 @@ if [[ $cni_provider == "flannel" ]]; then
   # ip link delete docker0
 
   podCIDR="10.244.0.0/16"
-  manifest="https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+  manifest="https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml"
   curl -o kube-cni.yml $manifest
   # Adapt for vagrant
   sed -i.bak '/--kube-subnet-mgr/a new-value_from-script' kube-cni.yml
@@ -30,7 +30,8 @@ if [[ $cni_provider == "flannel" ]]; then
 else
   echo "Prepare Calico"
   podCIDR="192.168.0.0/16"
-  manifest="https://docs.projectcalico.org/v3.8/manifests/calico.yaml"
+  # manifest="https://docs.projectcalico.org/v3.8/manifests/calico.yaml" # Till 1.22
+  manifest="https://docs.projectcalico.org/v3.22/manifests/calico.yaml" # >= 1.22
   curl -o kube-cni.yml $manifest
 fi
 

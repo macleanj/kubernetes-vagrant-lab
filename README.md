@@ -65,3 +65,5 @@ Deploy a test application
 kubectl run hello-world --image=jmaclean/hello-world
 ```
 
+# Sources
+- https://github.com/fondemen/vagrant-kubernetes
