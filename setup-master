@@ -31,7 +31,7 @@ else
   echo "Prepare Calico"
   podCIDR="192.168.0.0/16"
   # manifest="https://docs.projectcalico.org/v3.8/manifests/calico.yaml" # Till 1.22
-  manifest="https://docs.projectcalico.org/v3.22/manifests/calico.yaml" # >= 1.22
+  manifest="https://projectcalico.docs.tigera.io/v3.22/manifests/calico.yaml" # >= 1.22
   curl -o kube-cni.yml $manifest
 fi
 

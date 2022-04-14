@@ -76,17 +76,17 @@ servers=[
     :disksize => "20GB"
     # :ssh_port => '2220'
   },
-  {
-    :hostname => "node-1",
-    :type => "worker",
-    :box => "ubuntu/bionic64",
-    :box_version => "20191010.0.0",
-    :ip => "10.16.0.21",
-    :mem => "4096",
-    :cpu => "2",
-    :disksize => "20GB"
-    # :ssh_port => '2221'
-  },
+  # {
+  #   :hostname => "node-1",
+  #   :type => "worker",
+  #   :box => "ubuntu/bionic64",
+  #   :box_version => "20191010.0.0",
+  #   :ip => "10.16.0.21",
+  #   :mem => "4096",
+  #   :cpu => "2",
+  #   :disksize => "20GB"
+  #   # :ssh_port => '2221'
+  # },
   # {
   #   :hostname => "node-2",
   #   :type => "worker",
